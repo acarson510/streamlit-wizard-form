@@ -1,6 +1,6 @@
 ## Streamlit Wizard Form
 
-A very simple Streamlit wizard form using session state to navigate along steps for data entry and loading. A few practical examples below including Snowflake's Classic Console Load Table wizard, a standard checkout form, and adding a custom animated wizard. While these are just the examples I decided to use, the pattern can transfer to almost any use case requiring more complex user input which is better served from multiple views and a variation of widgets.
+A very simple Streamlit wizard form using session state to navigate along steps for data entry and loading. A few practical examples below including Snowflake's Classic Console Load Table wizard, a standard checkout form, and adding a custom animated spinner. While these are the examples I used, the pattern can transfer to almost any use case requiring more complex user input, which is better served from multiple views and a variation of widgets.
 
 ## Snowflake Table Loading Wizard
 
