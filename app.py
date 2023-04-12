@@ -80,7 +80,7 @@ def checkout_form():
             st.markdown('---')
             option_cols = st.columns(2)
             with option_cols[0]:                                                                
-                image = Image.open('assets/desert_landscape_2-min.jpg')
+                image = Image.open('assets/desert.jpg')
                 st.image(image, caption='Our Desert View',use_column_width=True)
                 st.write('**Room, 1 King Bed**')                
                 dim_cols = st.columns(2)
@@ -96,7 +96,7 @@ def checkout_form():
                 policy_cols[1].metric('**Nightly Price**',value=f'$ {price}',delta_color=delta_color,delta=f'$ {delta_val}')
                 st.button('Select',type='primary',key='select_1')
             with option_cols[1]:                
-                image = Image.open('assets/ocean_view_2-min.jpg')
+                image = Image.open('assets/ocean.jpg')
                 st.image(image, caption='Our Ocean View',use_column_width=True)
                 st.write('**Room, 2 Full Beds**')                
                 dim_cols = st.columns(2)
