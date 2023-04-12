@@ -60,8 +60,8 @@ def checkout_form():
     with st.expander('',expanded=True):        
         
         options = ['Traveler Information','Room Information','Summary','Payment Information']        
-        step = st.radio(label='',label_visibility='collapsed', options=options,horizontal=True,index=0)        
-
+        radio_cols = st.columns([.25,10])
+        step = radio_cols[1].radio(label='',label_visibility='collapsed', options=options,horizontal=True,index=0)                
         if step == 'Traveler Information':
             st.markdown('##### Let\'s start with the basic details.')            
             name_cols = st.columns(2)
@@ -80,7 +80,7 @@ def checkout_form():
             st.markdown('---')
             option_cols = st.columns(2)
             with option_cols[0]:                                                                
-                image = Image.open('assets/desert.jpg')
+                image = Image.open('assets/desert_landscape_2-min.jpg')
                 st.image(image, caption='Our Desert View',use_column_width=True)
                 st.write('**Room, 1 King Bed**')                
                 dim_cols = st.columns(2)
@@ -96,7 +96,7 @@ def checkout_form():
                 policy_cols[1].metric('**Nightly Price**',value=f'$ {price}',delta_color=delta_color,delta=f'$ {delta_val}')
                 st.button('Select',type='primary',key='select_1')
             with option_cols[1]:                
-                image = Image.open('assets/oceanside.jpg')
+                image = Image.open('assets/ocean_view_2-min.jpg')
                 st.image(image, caption='Our Ocean View',use_column_width=True)
                 st.write('**Room, 2 Full Beds**')                
                 dim_cols = st.columns(2)
@@ -168,6 +168,90 @@ def wizard_form_body():
     if st.session_state['current_step'] == 1:            
         st.markdown('\n')
         st.markdown('\n')
+        warehouses = ['DATA_LOADING_WH','ANALYTICS_WH','DATA_SCIENCE_WH']
+        warehouse = st.selectbox('Which warehouse do you want to use to load the files?',options=warehouses,index=0)
+
+    ###### Step 2: File Format ######
+    if st.session_state['current_step'] == 2:
+        st.markdown('\n')
+        st.markdown('\n')
+        file_format_cols = st.columns([9,1])                                
+        file_format = file_format_cols[0].selectbox('File Format',options=['csv_format'])
+        file_format_cols[1].markdown('\n')
+        file_format_cols[1].markdown('\n')
+        file_format_cols[1].button('➕')        
+        show_sql = st.radio('Show SQL',options=['Yes','No'],index=1,horizontal=True)
+        if show_sql == 'Yes':                
+            code = f'''PUT file://<file_path>/<file_name> @{st.session_state['table']}/ \n\nCOPY INTO "SANDBOX"."DATA_LOADING"."{st.session_state['table']}" FROM @/ui1675186369009\nON_ERROR = 'SKIP_FILE_0' PURGE = TRUE;'''
+            st.code(code, language='plsql')            
+
+    ###### Step 3: Load Options ######            
+    if st.session_state['current_step'] == 3:                      
+        st.session_state['load_options'] = st.radio('What should the load do if it encounters an error while parsing a file?',
+                options=[
+                    'Do not load any data in the file',
+                    'Stop loading, rollback and return the error',                        
+                    'Continue loading valid data from the file',
+                    'Do not load any data in the file if the error count exceeds:'
+                    ],
+                    index=1,
+                    horizontal=False
+            )
+        threshold_disabled = True if st.session_state['load_options'] == 'Do not load any data in the file if the error count exceeds:' else False
+        number_input_cols = st.columns(4)
+        number_input_cols[0].number_input('File',step=1,label_visibility='collapsed',disabled=not threshold_disabled)      
+
+    ###### Step 4: Source Files ######
+    if st.session_state['current_step'] == 4:            
+        source_file_container = st.empty()
+        with source_file_container.container():
+            st.markdown('\n')
+            st.markdown('\n')                                
+            st.session_state['queued_file'] = st.file_uploader('From where do you want to load files?')
+
+            if st.session_state['queued_file'] is not None:
+                table_rows = pd.read_csv(st.session_state['queued_file'])                      
+            
+    st.markdown('---')
+    
+    form_footer_container = st.empty()
+    with form_footer_container.container():
+        
+        disable_back_button = True if st.session_state['current_step'] == 1 else False
+        disable_next_button = True if st.session_state['current_step'] == 4 else False
+        
+        form_footer_cols = st.columns([5,1,1,1.75])
+        
+        form_footer_cols[0].button('Cancel',on_click=set_page_view,args=['Grid'])
+        form_footer_cols[1].button('Back',on_click=set_form_step,args=['Back'],disabled=disable_back_button)
+        form_footer_cols[2].button('Next',on_click=set_form_step,args=['Next'],disabled=disable_next_button)
+    
+        
+        file_ready = False if st.session_state['queued_file'] is not None else True
+        load_file = form_footer_cols[3].button('📤 Load Table',disabled=file_ready)
+         
+    if load_file:
+        source_file_container.empty()
+        form_footer_container.empty()        
+        with st.spinner('Loading file ...'):  
+            time.sleep(3)                  
+            success, response_message, num_rows = simulate_load_snowflake_table()
+            file_name = st.session_state['queued_file'].name
+
+            if success:                                                                                            
+                st.success(f'✅  Successfully loaded {num_rows} rows from file {file_name}.')                    
+            else:                         
+                st.error(f'❌  Failed to load {num_rows} rows from file {file_name}.')
+                                
+            ok_cols = st.columns(8)
+            ok_cols[0].button('OK',type='primary',on_click=set_page_view,args=['Grid'],use_container_width=True)                                          
+
+def wizard_form_body_animation():
+
+    ###### Step 1: Warehouses ######
+    if st.session_state['current_step'] == 1:            
+        st.markdown('\n')
+        st.markdown('\n')
         warehouses = ['DATA_LOADING_WH','ANALYTICS_WH','DATA_SCIENCE_WH']        
         warehouse = st.selectbox('Which warehouse do you want to use to load the files?',options=warehouses,index=0)            
 
@@ -233,7 +317,7 @@ def wizard_form_body():
     if load_file:
         source_file_container.empty()
         form_footer_container.empty()
-        response_container = st.empty()
+        response_container = st.empty()                                    
         with response_container.container():
             progress_bar_cols = st.columns([2,5,2])                                
             with progress_bar_cols[1]:                                                                            
@@ -253,13 +337,18 @@ def wizard_form_body():
                 st.error(f'❌  Failed to load {num_rows} rows from file {file_name}.')
                             
             ok_cols = st.columns(8)
-            ok_cols[0].button('OK',type='primary',on_click=set_page_view,args=['Grid'],use_container_width=True)
+            ok_cols[0].button('OK',type='primary',on_click=set_page_view,args=['Grid'],use_container_width=True)        
 
 ### Replace Render Wizard View With This ###
 def render_wizard_view():
     with st.expander('',expanded=True):
         wizard_form_header()
         wizard_form_body()
+
+def render_wizard_view_with_animation():
+    with st.expander('',expanded=True):
+        wizard_form_header()
+        wizard_form_body_animation()
 
 ##### grid functions ####
 def get_table_grid():
@@ -297,5 +386,8 @@ def render_grid_view():
 if st.session_state['current_view'] == 'Grid':     
     render_grid_view()
 else:
-  render_wizard_view()
-  # checkout_form()
+    form_example = st.selectbox('Which form example would you like to see?',options=['Snowflake Data Loader','Checkout Form'])
+    if form_example == 'Snowflake Data Loader':
+        render_wizard_view()
+    else:
+        checkout_form()
