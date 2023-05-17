@@ -2,7 +2,7 @@
 
 A very simple Streamlit wizard form using session state to navigate along steps for data entry and loading. A few practical examples below including Snowflake's Classic Console Load Table wizard, a standard checkout form, and adding a custom animated spinner. While these are the examples I used, the pattern can transfer to almost any use case requiring more complex user input, which is better served from multiple views and a variation of widgets.
 
-_For further detail, please refer to the [Streamlit blog](https://blog.streamlit.io/streamlit-wizard-form-with-custom-animated-spinner/)_ or [Medium article](https://example.com](https://medium.com/streamlit/streamlit-wizard-and-custom-animated-spinner-2dcd52cccc65)_.
+_For further detail, please refer to the [Streamlit blog](https://blog.streamlit.io/streamlit-wizard-form-with-custom-animated-spinner/)_ or [Medium article](https://medium.com/streamlit/streamlit-wizard-and-custom-animated-spinner-2dcd52cccc65)_.
 
 
 ![wizard_main](https://github.com/acarson510/streamlit-wizard-form/assets/15848721/e33c6b5a-6074-4279-ad9d-9c7f13a0ca2f)
