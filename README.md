@@ -7,6 +7,8 @@ _For further detail, please refer to the [Streamlit blog](https://blog.streamlit
 
 ![wizard_main](https://github.com/acarson510/streamlit-wizard-form/assets/15848721/e33c6b5a-6074-4279-ad9d-9c7f13a0ca2f)
 
+![checkout_form](https://github.com/acarson510/streamlit-wizard-form/assets/15848721/4fac7117-5f8d-4525-92d7-07be1598d79c)
+
 
 
 ## Snowflake Table Loading Wizard
