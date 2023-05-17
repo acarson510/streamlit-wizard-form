@@ -386,8 +386,10 @@ def render_grid_view():
 if st.session_state['current_view'] == 'Grid':     
     render_grid_view()
 else:
-    form_example = st.selectbox('Which form example would you like to see?',options=['Snowflake Data Loader','Checkout Form'])
+    form_example = st.selectbox('Which form example would you like to see?',options=['Snowflake Data Loader','Custom Spinner (Requires Lottie File Account)','Checkout Form'])
     if form_example == 'Snowflake Data Loader':
         render_wizard_view()
+    elif form_example == 'Custom Spinner (Requires Lottie File Account)':       
+        render_wizard_view_with_animation()
     else:
         checkout_form()
